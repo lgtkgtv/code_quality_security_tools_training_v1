@@ -1,0 +1,2960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Code Quality Tools - Interactive Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-nav {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tool-card {
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .tool-card.active {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .tool-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .tool-card.active h3 {
+            color: white;
+        }
+
+        .tool-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .tool-card.active p {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .workflow-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .content-area {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .content-area.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: #4CAF50;
+        }
+
+        .tab.active {
+            color: #4CAF50;
+            border-bottom-color: #4CAF50;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .code-container {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .code-header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre;
+        }
+
+        .run-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s ease;
+        }
+
+        .run-button:hover {
+            background: #45a049;
+        }
+
+        .output-panel {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .comparison-item.good {
+            border-left-color: #28a745;
+        }
+
+        .info-box {
+            background: linear-gradient(145deg, #e3f2fd, #bbdefb);
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: linear-gradient(145deg, #fff3e0, #ffe0b2);
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: linear-gradient(145deg, #e8f5e8, #c8e6c9);
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .interactive-demo {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .workflow-step {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4CAF50;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tool-comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .tool-comparison-table th,
+        .tool-comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .tool-comparison-table th {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .tool-comparison-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8e6cf 0%, #dcedc8 100%);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Python Code Quality Tools</h1>
+            <p>Interactive Tutorial for Professional Software Development</p>
+        </div>
+
+        <div class="main-nav">
+            <div class="nav-grid">
+                <div class="tool-card" data-tool="overview">
+                    <h3>🎯 Overview</h3>
+                    <p>Learn about code quality, why it matters, and how tools help maintain professional standards</p>
+                </div>
+                <div class="tool-card" data-tool="black">
+                    <h3>⚫ Black</h3>
+                    <p>Code formatting - automatic, consistent, and opinionated Python code formatting</p>
+                </div>
+                <div class="tool-card" data-tool="isort">
+                    <h3>📑 isort</h3>
+                    <p>Import organization - sorts and organizes imports according to PEP 8 standards</p>
+                </div>
+                <div class="tool-card" data-tool="flake8">
+                    <h3>📏 Flake8</h3>
+                    <p>Style enforcement - catches style violations, complexity issues, and basic errors</p>
+                </div>
+                <div class="tool-card" data-tool="mypy">
+                    <h3>🔍 MyPy</h3>
+                    <p>Type checking - static type analysis to catch type-related bugs before runtime</p>
+                </div>
+                <div class="tool-card" data-tool="pytest">
+                    <h3>🧪 Pytest</h3>
+                    <p>Testing framework - comprehensive testing to ensure code correctness and reliability</p>
+                </div>
+                <div class="tool-card" data-tool="bandit">
+                    <h3>🛡️ Bandit</h3>
+                    <p>Security scanner - identifies common security vulnerabilities in Python code</p>
+                </div>
+                <div class="tool-card" data-tool="workflow">
+                    <h3>⚙️ Integration</h3>
+                    <p>Tool workflow - how to combine all tools for automated quality assurance</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overview Content -->
+        <div class="content-area" id="overview-content">
+            <h2>🎯 Code Quality: Why It Matters</h2>
+            
+            <div class="section-tabs">
+                <button class="tab active" data-tab="why">Why Quality Matters</button>
+                <button class="tab" data-tab="problems">Common Problems</button>
+                <button class="tab" data-tab="solutions">Tool Solutions</button>
+            </div>
+
+            <div class="tab-content active" id="why">
+                <div class="info-box">
+                    <h3>What is Code Quality?</h3>
+                    <p>Code quality encompasses <span class="highlight">readability</span>, <span class="highlight">maintainability</span>, <span class="highlight">reliability</span>, <span class="highlight">security</span>, and <span class="highlight">performance</span>. Professional software development requires consistent standards to ensure code can be understood, modified, and debugged efficiently by multiple developers over time.</p>
+                </div>
+
+                <h3>The Business Case for Code Quality</h3>
+                <div class="workflow-step">
+                    <h4>💰 Reduced Development Costs</h4>
+                    <p>Clean, well-organized code is faster to understand, modify, and debug. Teams spend 70% of their time reading existing code.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🐛 Fewer Bugs in Production</h4>
+                    <p>Consistent standards and automated checks catch issues before they reach users, reducing support costs and improving reliability.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>👥 Team Collaboration</h4>
+                    <p>Standardized code formatting and structure enables seamless collaboration between team members.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🔒 Security Compliance</h4>
+                    <p>Automated security scanning helps meet compliance requirements and protects against common vulnerabilities.</p>
+                </div>
+            </div>
+
+            <div class="tab-content" id="problems">
+                <h3>Problems That Quality Tools Solve</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <h4>❌ Without Tools</h4>
+                        <ul>
+                            <li>Inconsistent code formatting across team</li>
+                            <li>Import statements scattered randomly</li>
+                            <li>Runtime type errors</li>
+                            <li>Security vulnerabilities</li>
+                            <li>Untested code paths</li>
+                            <li>Style violations slow code reviews</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-item good">
+                        <h4>✅ With Quality Tools</h4>
+                        <ul>
+                            <li>Automatically formatted, consistent code</li>
+                            <li>Properly organized imports</li>
+                            <li>Type safety catching errors early</li>
+                            <li>Security issues identified before deployment</li>
+                            <li>Comprehensive test coverage</li>
+                            <li>Automated quality checks in CI/CD</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="solutions">
+                <h3>How Each Tool Contributes</h3>
+                <table class="tool-comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Purpose</th>
+                            <th>Key Benefits</th>
+                            <th>Integration Point</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Black</strong></td>
+                            <td>Code Formatting</td>
+                            <td>Eliminates formatting debates, consistent style</td>
+                            <td>Pre-commit hooks, CI/CD</td>
+                        </tr>
+                        <tr>
+                            <td><strong>isort</strong></td>
+                            <td>Import Organization</td>
+                            <td>Clear dependencies, PEP 8 compliance</td>
+                            <td>Pre-commit hooks, IDE integration</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Flake8</strong></td>
+                            <td>Style & Complexity</td>
+                            <td>Enforces PEP 8, complexity limits</td>
+                            <td>CI/CD gates, code review</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MyPy</strong></td>
+                            <td>Static Type Checking</td>
+                            <td>Catches type errors before runtime</td>
+                            <td>CI/CD, IDE type hints</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pytest</strong></td>
+                            <td>Testing Framework</td>
+                            <td>Ensures code correctness, regression prevention</td>
+                            <td>CI/CD, TDD workflow</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bandit</strong></td>
+                            <td>Security Scanning</td>
+                            <td>Identifies security vulnerabilities</td>
+                            <td>Security gates, compliance checks</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Black Content -->
+        <div class="content-area" id="black-content">
+            <h2>⚫ Black: The Uncompromising Code Formatter</h2>
+            
+            <div class="section-tabs">
+                <button class="tab active" data-tab="black-what">What & Why</button>
+                <button class="tab" data-tab="black-how">How It Works</button>
+                <button class="tab" data-tab="black-demo">Interactive Demo</button>
+            </div>
+
+            <div class="tab-content active" id="black-what">
+                <div class="info-box">
+                    <h3>What is Black?</h3>
+                    <p>Black is an <span class="highlight">opinionated code formatter</span> that automatically reformats Python code to follow a consistent style. It eliminates debates about formatting by enforcing a single, well-defined style.</p>
+                </div>
+
+                <h3>Why Black Matters</h3>
+                <div class="workflow-step">
+                    <h4>🎯 Eliminates Formatting Debates</h4>
+                    <p>No more time wasted in code reviews discussing whether to use single or double quotes, or how to format long function signatures.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>⚡ Faster Code Reviews</h4>
+                    <p>Reviewers can focus on logic and functionality instead of style nitpicks.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🧠 Mental Load Reduction</h4>
+                    <p>Developers don't need to think about formatting - it's handled automatically.</p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <h4>❌ Before Black</h4>
+                        <div class="code-block">def calculate_total(items,tax_rate=0.1,discount= 0.05):
+    subtotal=0
+    for item in items:
+        price=item[ 'price' ]
+        quantity =item['quantity']
+        subtotal+= price*quantity
+    return subtotal</div>
+                    </div>
+                    <div class="comparison-item good">
+                        <h4>✅ After Black</h4>
+                        <div class="code-block">def calculate_total(items, tax_rate=0.1, discount=0.05):
+    subtotal = 0
+    for item in items:
+        price = item["price"]
+        quantity = item["quantity"]
+        subtotal += price * quantity
+    return subtotal</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="black-how">
+                <h3>How Black Works</h3>
+                
+                <div class="workflow-step">
+                    <h4>1. Parsing</h4>
+                    <p>Black parses your Python code into an Abstract Syntax Tree (AST) to understand the structure without changing the meaning.</p>
+                </div>
+                
+                <div class="workflow-step">
+                    <h4>2. Reformatting Rules</h4>
+                    <p>Applies consistent formatting rules:</p>
+                    <ul>
+                        <li>Double quotes for strings (configurable)</li>
+                        <li>Spaces around operators</li>
+                        <li>Consistent line length (default 88 characters)</li>
+                        <li>Trailing commas in multi-line constructs</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Installation & Basic Usage</span>
+                    </div>
+                    <div class="code-block"># Install Black
+pip install black
+
+# Format a single file
+black my_script.py
+
+# Format an entire project
+black .
+
+# Check what would change without modifying files
+black --check .
+
+# Show diff of what would change
+black --diff my_script.py</div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="black-demo">
+                <h3>Interactive Black Demo</h3>
+                <div class="interactive-demo">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Unformatted Code (try running Black)</span>
+                            <button class="run-button" onclick="runBlackDemo()">Format with Black</button>
+                        </div>
+                        <div class="code-block" id="black-input">def process_order(customer_id,items,shipping_address,billing_address,payment_method,special_instructions=None,priority='normal',gift_wrap=False):
+    order={'customer_id':customer_id,'items':items,'shipping':shipping_address,'billing':billing_address,'payment':payment_method,'instructions':special_instructions,'priority':priority,'gift_wrap':gift_wrap,'status':'pending','total':0}
+    order_total=sum([item['price']*item['quantity'] for item in items])
+    order['total']=order_total
+    return order</div>
+                    </div>
+                    <div class="output-panel" id="black-output">Click "Format with Black" to see the formatted result...</div>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ Key Black Benefits</h4>
+                    <ul>
+                        <li><strong>Consistency:</strong> All team members' code looks identical</li>
+                        <li><strong>Readability:</strong> Proper spacing and line breaks improve comprehension</li>
+                        <li><strong>Automation:</strong> Integrates with editors, pre-commit hooks, and CI/CD</li>
+                        <li><strong>Standards:</strong> Follows community best practices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pytest Content -->
+        <div class="content-area" id="pytest-content">
+            <h2>🧪 Pytest: Professional Testing Framework</h2>
+            
+            <div class="section-tabs">
+                <button class="tab active" data-tab="pytest-what">What & Why</button>
+                <button class="tab" data-tab="pytest-how">How It Works</button>
+                <button class="tab" data-tab="pytest-demo">Interactive Demo</button>
+                <button class="tab" data-tab="pytest-advanced">Advanced Testing</button>
+            </div>
+
+            <div class="tab-content active" id="pytest-what">
+                <div class="info-box">
+                    <h3>What is Pytest?</h3>
+                    <p>Pytest is a <span class="highlight">professional testing framework</span> that makes writing and running tests simple and scalable. It supports unit tests, integration tests, and functional tests with powerful features like fixtures, parametrization, and detailed reporting.</p>
+                </div>
+
+                <h3>Why Testing is Critical for Professional Development</h3>
+                <div class="workflow-step">
+                    <h4>🛡️ Prevents Regressions</h4>
+                    <p>Automated tests catch bugs when modifying existing code, ensuring changes don't break working functionality.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>📋 Documents Behavior</h4>
+                    <p>Tests serve as executable documentation, showing how code should behave and what edge cases are handled.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🔧 Enables Confident Refactoring</h4>
+                    <p>Comprehensive test coverage allows developers to restructure code knowing they'll catch any breaking changes.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>⚡ Speeds Up Development</h4>
+                    <p>Automated testing is faster and more reliable than manual testing, especially for complex scenarios.</p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <h4>❌ Without Automated Testing</h4>
+                        <div class="code-block">def calculate_discount(price, discount_percent):
+    # No validation - will crash with invalid inputs
+    return price - (price * discount_percent)
+
+def is_valid_email(email):
+    # Oversimplified - many edge cases missed
+    return "@" in email and "." in email
+
+# Manual testing required for every change:
+# - Test with different price values
+# - Test with edge cases (negative, zero)
+# - Test email validation with various formats
+# - Risk of missing edge cases
+# - Time-consuming manual verification</div>
+                    </div>
+                    <div class="comparison-item good">
+                        <h4>✅ With Pytest Testing</h4>
+                        <div class="code-block">def test_calculate_discount_valid_inputs():
+    assert calculate_discount(100, 10) == 90.0
+    assert calculate_discount(50, 20) == 40.0
+
+def test_calculate_discount_edge_cases():
+    assert calculate_discount(0, 10) == 0.0
+    assert calculate_discount(1.99, 5) == 1.89
+
+def test_calculate_discount_invalid_inputs():
+    with pytest.raises(ValueError):
+        calculate_discount(-10, 5)
+
+def test_email_validation():
+    assert is_valid_email("user@example.com") is True
+    assert is_valid_email("invalid-email") is False
+
+# Automated verification:
+# ✅ Run all tests in seconds
+# ✅ Comprehensive edge case coverage
+# ✅ Regression prevention
+# ✅ Continuous integration ready</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Consequences of Poor Testing</h4>
+                    <ul>
+                        <li><strong>Production Bugs:</strong> Issues discovered by users instead of developers</li>
+                        <li><strong>Fear of Changes:</strong> Developers afraid to modify code without tests</li>
+                        <li><strong>Technical Debt:</strong> Accumulating untested code becomes harder to maintain</li>
+                        <li><strong>Manual Overhead:</strong> Time wasted on repetitive manual testing</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ Professional Testing Benefits</h4>
+                    <ul>
+                        <li><strong>Quality Assurance:</strong> Catch bugs before they reach production</li>
+                        <li><strong>Development Speed:</strong> Quick feedback on code changes</li>
+                        <li><strong>Team Confidence:</strong> Safe to refactor and optimize code</li>
+                        <li><strong>Documentation:</strong> Tests explain how code should work</li>
+                        <li><strong>Maintenance:</strong> Easier to modify well-tested codebases</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="pytest-how">
+                <h3>How Pytest Works</h3>
+                
+                <div class="workflow-step">
+                    <h4>1. Test Discovery</h4>
+                    <p>Pytest automatically finds tests using these patterns:</p>
+                    <ul>
+                        <li>Files named <code>test_*.py</code> or <code>*_test.py</code></li>
+                        <li>Functions named <code>test_*</code></li>
+                        <li>Classes named <code>Test*</code> with methods named <code>test_*</code></li>
+                    </ul>
+                </div>
+                
+                <div class="workflow-step">
+                    <h4>2. Test Execution</h4>
+                    <p>Pytest runs tests with powerful features:</p>
+                    <ul>
+                        <li><strong>Assertions:</strong> Simple <code>assert</code> statements with detailed failure info</li>
+                        <li><strong>Fixtures:</strong> Reusable test setup and teardown</li>
+                        <li><strong>Parametrization:</strong> Run same test with different inputs</li>
+                        <li><strong>Markers:</strong> Organize and filter tests</li>
+                    </ul>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>3. Test Types</h4>
+                    <ul>
+                        <li><strong>Unit Tests:</strong> Test individual functions/methods</li>
+                        <li><strong>Integration Tests:</strong> Test component interactions</li>
+                        <li><strong>Functional Tests:</strong> Test complete user workflows</li>
+                        <li><strong>Performance Tests:</strong> Verify speed and resource usage</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Installation & Basic Usage</span>
+                    </div>
+                    <div class="code-block"># Install Pytest
+pip install pytest pytest-cov pytest-xdist
+
+# Run all tests
+pytest
+
+# Run specific test file
+pytest test_my_module.py
+
+# Run tests with coverage
+pytest --cov=src --cov-report=html
+
+# Run tests in parallel
+pytest -n auto
+
+# Run only failed tests from last run
+pytest --lf
+
+# Generate detailed HTML report
+pytest --html=report.html --self-contained-html</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Basic Test Structure</span>
+                    </div>
+                    <div class="code-block"># test_example.py
+import pytest
+from myapp import calculate_discount, ShoppingCart
+
+def test_discount_calculation():
+    """Test basic discount functionality."""
+    result = calculate_discount(100.0, 10.0)
+    assert result == 90.0
+
+def test_discount_edge_cases():
+    """Test edge cases and error conditions."""
+    assert calculate_discount(0, 10) == 0.0
+    
+    with pytest.raises(ValueError):
+        calculate_discount(-10, 5)
+
+@pytest.mark.parametrize("price,discount,expected", [
+    (100, 10, 90),
+    (50, 20, 40),
+    (25, 0, 25),
+])
+def test_discount_parameters(price, discount, expected):
+    """Test multiple scenarios with parametrization."""
+    assert calculate_discount(price, discount) == expected</div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🎯 Pytest Advantages Over unittest</h4>
+                    <ul>
+                        <li><strong>Simple Syntax:</strong> Use plain <code>assert</code> statements</li>
+                        <li><strong>Powerful Fixtures:</strong> Flexible test setup and dependency injection</li>
+                        <li><strong>Rich Plugins:</strong> Extensive ecosystem for coverage, reporting, etc.</li>
+                        <li><strong>Better Output:</strong> Detailed failure information and diffs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="pytest-demo">
+                <h3>Interactive Pytest Demo</h3>
+                <div class="interactive-demo">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Code with Logical Bugs (try running tests)</span>
+                            <button class="run-button" onclick="runPytestDemo()">Run Test Suite</button>
+                        </div>
+                        <div class="code-block" id="pytest-input"># shopping_cart.py (contains bugs!)
+class ShoppingCart:
+    def __init__(self):
+        self.items = []
+    
+    def add_item(self, item, price):
+        # BUG: No validation
+        self.items.append({"item": item, "price": price})
+    
+    def get_total(self):
+        # BUG: Division by zero with empty cart
+        if len(self.items) == 0:
+            return 1 / 0  # Crashes!
+        total = 0
+        for item in self.items:
+            total += item["price"]
+        return total
+    
+    def apply_bulk_discount(self):
+        # BUG: Wrong comparison operator
+        if len(self.items) < 5:  # Should be >= 5
+            for item in self.items:
+                item["price"] = item["price"] * 0.9
+
+# test_shopping_cart.py
+def test_empty_cart():
+    cart = ShoppingCart()
+    assert cart.get_total() == 0.0  # Will fail!
+
+def test_add_item():
+    cart = ShoppingCart()
+    cart.add_item("Apple", 1.50)
+    assert len(cart.items) == 1
+
+def test_bulk_discount():
+    cart = ShoppingCart()
+    for i in range(5):
+        cart.add_item(f"Item{i}", 10.0)
+    
+    original_total = cart.get_total()
+    cart.apply_bulk_discount()
+    discounted_total = cart.get_total()
+    
+    assert discounted_total == original_total * 0.9  # Will fail!</div>
+                    </div>
+                    <div class="output-panel" id="pytest-output">Click "Run Test Suite" to see test failures and bugs detected...</div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Test-Driven Development Demo</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>TDD: Write Tests First</span>
+                            <button class="run-button" onclick="showTDDDemo()">Show TDD Process</button>
+                        </div>
+                        <div class="output-panel" id="tdd-output">Click to see Test-Driven Development workflow...</div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Fixtures & Parametrization Demo</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Advanced Testing Patterns</span>
+                            <button class="run-button" onclick="showFixturesDemo()">Explore Fixtures</button>
+                        </div>
+                        <div class="output-panel" id="fixtures-output">Click to see fixtures and parametrization in action...</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Common Testing Mistakes</h4>
+                    <ul>
+                        <li><strong>Testing Implementation, Not Behavior:</strong> Tests break when refactoring</li>
+                        <li><strong>Poor Test Names:</strong> Unclear what functionality is being tested</li>
+                        <li><strong>Overuse of Mocks:</strong> Tests become disconnected from reality</li>
+                        <li><strong>No Edge Case Testing:</strong> Missing boundary conditions and error cases</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="pytest-advanced">
+                <h3>Advanced Testing Patterns & Configuration</h3>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>pytest.ini Configuration</span>
+                    </div>
+                    <div class="code-block">[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "-ra",                    # Show summary of all test outcomes
+    "-q",                     # Quiet output
+    "--strict-markers",       # Require marker registration
+    "--strict-config",        # Strict configuration parsing
+    "--cov=src",             # Code coverage for src directory
+    "--cov-report=term-missing", # Show missing lines
+    "--cov-report=html",     # Generate HTML coverage report
+    "--cov-fail-under=80",   # Fail if coverage below 80%
+]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+]</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Advanced Fixtures</span>
+                    </div>
+                    <div class="code-block">import pytest
+from unittest.mock import Mock
+import tempfile
+import shutil
+
+@pytest.fixture
+def sample_user():
+    """Fixture providing a sample user for tests."""
+    return {"name": "Alice", "email": "alice@example.com", "age": 30}
+
+@pytest.fixture
+def temp_directory():
+    """Fixture providing a temporary directory."""
+    temp_dir = tempfile.mkdtemp()
+    yield temp_dir
+    shutil.rmtree(temp_dir)  # Cleanup after test
+
+@pytest.fixture
+def mock_database():
+    """Fixture providing a mocked database."""
+    mock_db = Mock()
+    mock_db.get_user.return_value = {"id": 1, "name": "Test User"}
+    return mock_db
+
+@pytest.fixture(scope="session")
+def database_connection():
+    """Session-scoped fixture for expensive setup."""
+    # Setup expensive resource once per test session
+    connection = create_test_database()
+    yield connection
+    connection.close()
+
+# Parameterized fixture
+@pytest.fixture(params=["sqlite", "postgres", "mysql"])
+def database_type(request):
+    """Test with multiple database types."""
+    return request.param</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Test Organization Patterns</span>
+                    </div>
+                    <div class="code-block"># conftest.py - Shared fixtures
+import pytest
+
+@pytest.fixture
+def client():
+    """Flask test client fixture."""
+    from myapp import create_app
+    app = create_app(testing=True)
+    with app.test_client() as client:
+        yield client
+
+# test_unit/ - Unit tests
+def test_calculate_discount_unit(sample_user):
+    """Test discount calculation logic."""
+    pass
+
+# test_integration/ - Integration tests  
+@pytest.mark.integration
+def test_user_registration_flow(client):
+    """Test complete user registration."""
+    response = client.post('/register', data={...})
+    assert response.status_code == 201
+
+# test_performance/ - Performance tests
+@pytest.mark.slow
+def test_bulk_data_processing():
+    """Test processing large datasets."""
+    pass</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CI/CD Integration</span>
+                    </div>
+                    <div class="code-block"># GitHub Actions workflow
+- name: Run tests
+  run: |
+    pytest --cov=src --cov-report=xml --cov-report=term
+    
+- name: Upload coverage to Codecov
+  uses: codecov/codecov-action@v3
+  with:
+    file: ./coverage.xml
+    
+# Makefile targets
+test:
+	pytest
+
+test-cov:
+	pytest --cov=src --cov-report=html --cov-report=term
+
+test-fast:
+	pytest -m "not slow"
+
+test-integration:
+	pytest -m integration</div>
+                </div>
+
+                <table class="tool-comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Test Type</th>
+                            <th>Scope</th>
+                            <th>Speed</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Unit Tests</strong></td>
+                            <td>Single function/class</td>
+                            <td>Very Fast</td>
+                            <td>Verify individual components work correctly</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Integration Tests</strong></td>
+                            <td>Multiple components</td>
+                            <td>Medium</td>
+                            <td>Verify components work together</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Functional Tests</strong></td>
+                            <td>Complete features</td>
+                            <td>Slow</td>
+                            <td>Verify end-to-end user workflows</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance Tests</strong></td>
+                            <td>System behavior</td>
+                            <td>Very Slow</td>
+                            <td>Verify speed and resource usage</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="workflow-step">
+                    <h4>🎯 Testing Best Practices</h4>
+                    <ol>
+                        <li><strong>Test Pyramid:</strong> Many unit tests, fewer integration tests, minimal E2E tests</li>
+                        <li><strong>Arrange-Act-Assert:</strong> Clear test structure for readability</li>
+                        <li><strong>Independent Tests:</strong> Each test should run in isolation</li>
+                        <li><strong>Descriptive Names:</strong> Test names should explain what is being tested</li>
+                        <li><strong>Coverage Goals:</strong> Aim for 80%+ coverage but focus on critical paths</li>
+                    </ol>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ Professional Testing Strategy</h4>
+                    <ul>
+                        <li><strong>Start Small:</strong> Begin with unit tests for critical business logic</li>
+                        <li><strong>Test-Driven Development:</strong> Write tests before implementation</li>
+                        <li><strong>Continuous Integration:</strong> Run tests automatically on every commit</li>
+                        <li><strong>Coverage Monitoring:</strong> Track test coverage trends over time</li>
+                        <li><strong>Regular Maintenance:</strong> Keep tests updated as code evolves</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content-area" id="bandit-content">
+            <h2>🛡️ Bandit: Security Vulnerability Scanner</h2>
+            
+            <div class="section-tabs">
+                <button class="tab active" data-tab="bandit-what">What & Why</button>
+                <button class="tab" data-tab="bandit-how">How It Works</button>
+                <button class="tab" data-tab="bandit-demo">Interactive Demo</button>
+                <button class="tab" data-tab="bandit-enterprise">Enterprise Security</button>
+            </div>
+
+            <div class="tab-content active" id="bandit-what">
+                <div class="info-box">
+                    <h3>What is Bandit?</h3>
+                    <p>Bandit is a <span class="highlight">security-focused static analysis tool</span> that scans Python code for common security vulnerabilities. It identifies potential security issues like SQL injection, shell injection, hardcoded passwords, and insecure random number generation.</p>
+                </div>
+
+                <h3>Why Security Scanning is Critical for Professional Development</h3>
+                <div class="workflow-step">
+                    <h4>🔒 Prevents Security Breaches</h4>
+                    <p>Identifies vulnerabilities before they reach production, preventing data breaches and security incidents that could damage your organization.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>📋 Compliance Requirements</h4>
+                    <p>Many industries require automated security scanning as part of compliance frameworks like SOC 2, PCI DSS, and GDPR.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>💰 Cost Prevention</h4>
+                    <p>Security issues are exponentially more expensive to fix in production than during development. Early detection saves significant costs.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🏗️ Security Culture</h4>
+                    <p>Integrates security awareness into the development process, making security a shared responsibility across the team.</p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <h4>❌ Without Security Scanning</h4>
+                        <div class="code-block">import os
+import subprocess
+import pickle
+import random
+
+def unsafe_shell_execution():
+    # Shell injection vulnerability
+    user_input = input("Enter filename: ")
+    command = f"cat {user_input}"
+    os.system(command)  # Dangerous!
+
+def weak_random_generation():
+    # Cryptographically weak random
+    session_token = random.randint(1000000, 9999999)
+    return session_token
+
+def unsafe_pickle_usage():
+    # Arbitrary code execution risk
+    with open('user_data.pkl', 'rb') as f:
+        data = pickle.loads(f.read())  # Dangerous!
+
+def hardcoded_credentials():
+    # Secrets in source code
+    DATABASE_PASSWORD = "super_secret_123"
+    API_KEY = "sk-1234567890abcdef"</div>
+                    </div>
+                    <div class="comparison-item good">
+                        <h4>✅ Security-Hardened Code</h4>
+                        <div class="code-block">import os
+import subprocess
+import json
+import secrets
+from pathlib import Path
+
+def safe_shell_execution():
+    user_input = input("Enter filename: ")
+    # Validate and sanitize input
+    safe_path = Path(user_input).resolve()
+    if not safe_path.exists():
+        raise ValueError("Invalid file path")
+    
+    # Use subprocess with list (no shell injection)
+    result = subprocess.run(['cat', str(safe_path)], 
+                          capture_output=True, text=True)
+
+def secure_random_generation():
+    # Cryptographically secure random
+    session_token = secrets.randbelow(9000000) + 1000000
+    return session_token
+
+def safe_data_serialization():
+    # Use JSON instead of pickle
+    with open('user_data.json', 'r') as f:
+        data = json.load(f)  # Safe from code execution
+
+def secure_credentials():
+    # Read from environment variables
+    password = os.getenv('DATABASE_PASSWORD')
+    api_key = os.getenv('API_KEY')</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Common Security Vulnerabilities Bandit Detects</h4>
+                    <ul>
+                        <li><strong>Shell Injection:</strong> User input in shell commands</li>
+                        <li><strong>SQL Injection:</strong> Unsafe string formatting in SQL queries</li>
+                        <li><strong>Hardcoded Secrets:</strong> Passwords and API keys in source code</li>
+                        <li><strong>Insecure Random:</strong> Using predictable random number generators</li>
+                        <li><strong>Unsafe Deserialization:</strong> pickle.loads() with untrusted data</li>
+                        <li><strong>Weak Cryptography:</strong> Deprecated or weak encryption methods</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ Professional Security Benefits</h4>
+                    <ul>
+                        <li><strong>Automated Detection:</strong> Catch security issues without manual review</li>
+                        <li><strong>Early Prevention:</strong> Fix vulnerabilities during development</li>
+                        <li><strong>Compliance Support:</strong> Meet security audit requirements</li>
+                        <li><strong>Team Education:</strong> Learn secure coding practices</li>
+                        <li><strong>Risk Reduction:</strong> Minimize security incident probability</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="bandit-how">
+                <h3>How Bandit Analyzes Security Vulnerabilities</h3>
+                
+                <div class="workflow-step">
+                    <h4>1. Static Code Analysis</h4>
+                    <p>Bandit parses Python code into an Abstract Syntax Tree (AST) and applies security-focused rules:</p>
+                    <ul>
+                        <li>Analyzes function calls for dangerous patterns</li>
+                        <li>Examines string literals for hardcoded secrets</li>
+                        <li>Checks import statements for insecure libraries</li>
+                        <li>Validates cryptographic usage patterns</li>
+                    </ul>
+                </div>
+                
+                <div class="workflow-step">
+                    <h4>2. Vulnerability Categories</h4>
+                    <p>Bandit categorizes issues by type and severity:</p>
+                    <ul>
+                        <li><strong>B1xx:</strong> Injection vulnerabilities (shell, SQL)</li>
+                        <li><strong>B2xx:</strong> Insecure functions and libraries</li>
+                        <li><strong>B3xx:</strong> Hardcoded secrets and credentials</li>
+                        <li><strong>B4xx:</strong> Cryptographic weaknesses</li>
+                        <li><strong>B5xx:</strong> General security anti-patterns</li>
+                    </ul>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>3. Severity Levels</h4>
+                    <ul>
+                        <li><strong>HIGH:</strong> Critical vulnerabilities requiring immediate attention</li>
+                        <li><strong>MEDIUM:</strong> Significant security concerns</li>
+                        <li><strong>LOW:</strong> Potential issues worth reviewing</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Installation & Basic Usage</span>
+                    </div>
+                    <div class="code-block"># Install Bandit
+pip install bandit[toml]
+
+# Scan single file
+bandit my_script.py
+
+# Scan entire project
+bandit -r .
+
+# Generate JSON report
+bandit -r . -f json -o security_report.json
+
+# Scan with specific confidence level
+bandit -r . -i  # Include low confidence issues
+
+# Exclude specific vulnerabilities
+bandit -r . -s B101,B601
+
+# Generate HTML report
+bandit -r . -f html -o security_report.html</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Example Bandit Output</span>
+                    </div>
+                    <div class="code-block">Test results:
+>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   Location: ./vulnerable_code.py:15
+   More Info: https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html
+
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'super_secret_123'
+   Severity: Low   Confidence: Medium
+   Location: ./vulnerable_code.py:8
+   More Info: https://bandit.readthedocs.io/en/latest/plugins/b105_hardcoded_password_string.html
+
+>> Issue: [B301:pickle] Pickle library appears to be in use, possible security issue.
+   Severity: Medium   Confidence: High
+   Location: ./vulnerable_code.py:22
+
+Code scanned:
+	Total lines of code: 156
+	Total lines skipped (#nosec): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 2
+		Medium: 1
+		High: 3
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 1
+		High: 5</div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🎯 Understanding Bandit Metrics</h4>
+                    <ul>
+                        <li><strong>Severity:</strong> Impact if vulnerability is exploited</li>
+                        <li><strong>Confidence:</strong> Likelihood that finding is a real vulnerability</li>
+                        <li><strong>Location:</strong> Exact file and line number</li>
+                        <li><strong>More Info:</strong> Links to detailed vulnerability descriptions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="bandit-demo">
+                <h3>Interactive Bandit Demo</h3>
+                <div class="interactive-demo">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Code with Security Vulnerabilities (try running Bandit)</span>
+                            <button class="run-button" onclick="runBanditDemo()">Run Security Scan</button>
+                        </div>
+                        <div class="code-block" id="bandit-input">import os
+import subprocess
+import pickle
+import random
+import hashlib
+
+# B602: Shell injection vulnerability
+def unsafe_file_processing():
+    filename = input("Enter filename: ")
+    # Attacker could input: "; rm -rf /"
+    os.system(f"cat {filename}")
+
+# B105: Hardcoded credentials
+DATABASE_PASSWORD = "super_secret_password_123"
+API_SECRET = "sk-live-abcd1234567890"
+
+# B311: Weak random number generation
+def generate_session_token():
+    # Predictable for security-sensitive operations
+    return random.randint(100000, 999999)
+
+# B301: Unsafe deserialization
+def load_user_data():
+    with open("userdata.pkl", "rb") as f:
+        # Can execute arbitrary code!
+        return pickle.load(f)
+
+# B303: Weak hash function
+def hash_password(password):
+    # MD5 is cryptographically broken
+    return hashlib.md5(password.encode()).hexdigest()
+
+# B108: Insecure temporary file
+def create_temp_file():
+    temp_filename = f"/tmp/data_{random.randint(1, 1000)}"
+    with open(temp_filename, "w") as f:
+        f.write("sensitive data")
+    return temp_filename</div>
+                    </div>
+                    <div class="output-panel" id="bandit-output">Click "Run Security Scan" to see vulnerabilities detected...</div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Vulnerability Impact Demo</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Security Impact Analysis</span>
+                            <button class="run-button" onclick="showSecurityImpactDemo()">Analyze Impact</button>
+                        </div>
+                        <div class="output-panel" id="security-impact-output">Click to see real-world impact of these vulnerabilities...</div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Secure Alternatives Demo</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Secure Code Patterns</span>
+                            <button class="run-button" onclick="showSecureAlternatives()">Show Secure Versions</button>
+                        </div>
+                        <div class="output-panel" id="secure-alternatives-output">Click to see how to fix these security issues...</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🚨 Critical Security Principles</h4>
+                    <ul>
+                        <li><strong>Input Validation:</strong> Never trust user input without validation</li>
+                        <li><strong>Least Privilege:</strong> Run with minimum necessary permissions</li>
+                        <li><strong>Defense in Depth:</strong> Multiple security layers</li>
+                        <li><strong>Secure by Default:</strong> Choose secure options as defaults</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="bandit-enterprise">
+                <h3>Enterprise Security Integration</h3>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>bandit.yaml Configuration</span>
+                    </div>
+                    <div class="code-block"># .bandit
+exclude_dirs:
+  - /tests
+  - /venv
+  - /.tox
+
+skips:
+  - B101  # Skip assert_used tests (allow in test files)
+  - B601  # Skip shell injection if using paramiko (example)
+
+# Custom test selection
+tests:
+  - B102  # exec_used
+  - B103  # set_bad_file_permissions
+  - B104  # hardcoded_bind_all_interfaces
+  - B105  # hardcoded_password_string
+  - B106  # hardcoded_password_funcarg
+  - B107  # hardcoded_password_default
+
+# Severity and confidence levels
+severity: medium
+confidence: medium
+
+# Plugin configuration
+plugins:
+  bandit_plugins:
+    - bandit.plugins.crypto
+    - bandit.plugins.general</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CI/CD Security Pipeline</span>
+                    </div>
+                    <div class="code-block"># GitHub Actions Security Workflow
+name: Security Scan
+on: [push, pull_request]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    
+    - name: Install Bandit
+      run: pip install bandit[toml]
+    
+    - name: Run Bandit Security Scan
+      run: |
+        bandit -r . -f json -o bandit-report.json
+        
+    - name: Upload Security Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: bandit-security-report
+        path: bandit-report.json
+        
+    - name: Security Gate
+      run: |
+        # Fail build if high severity issues found
+        if bandit -r . -f json | jq '.results[] | select(.issue_severity=="HIGH")' | grep -q .; then
+          echo "High severity security issues found!"
+          exit 1
+        fi</div>
+                </div>
+
+                <table class="tool-comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Vulnerability Type</th>
+                            <th>Bandit Test ID</th>
+                            <th>Severity</th>
+                            <th>Common Occurrence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Shell Injection</strong></td>
+                            <td>B602, B605</td>
+                            <td>High</td>
+                            <td>User input in os.system(), subprocess with shell=True</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SQL Injection</strong></td>
+                            <td>B608</td>
+                            <td>High</td>
+                            <td>String formatting in SQL queries</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hardcoded Secrets</strong></td>
+                            <td>B105, B106</td>
+                            <td>Medium</td>
+                            <td>Passwords, API keys in source code</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Weak Crypto</strong></td>
+                            <td>B303, B304</td>
+                            <td>Medium</td>
+                            <td>MD5, SHA1 for security purposes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Insecure Random</strong></td>
+                            <td>B311</td>
+                            <td>Low</td>
+                            <td>random module for security tokens</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Unsafe Deserialization</strong></td>
+                            <td>B301</td>
+                            <td>Medium</td>
+                            <td>pickle.loads() with untrusted data</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="workflow-step">
+                    <h4>🛡️ Security Integration Strategy</h4>
+                    <ol>
+                        <li><strong>Development Phase:</strong> IDE integration for real-time feedback</li>
+                        <li><strong>Pre-commit:</strong> Block commits with high-severity issues</li>
+                        <li><strong>CI/CD Pipeline:</strong> Automated scanning on every build</li>
+                        <li><strong>Security Gates:</strong> Prevent deployment with critical vulnerabilities</li>
+                        <li><strong>Regular Audits:</strong> Periodic comprehensive security reviews</li>
+                    </ol>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ Enterprise Security Best Practices</h4>
+                    <ul>
+                        <li><strong>Shift Left Security:</strong> Integrate security early in development</li>
+                        <li><strong>Automated Scanning:</strong> Continuous security monitoring</li>
+                        <li><strong>Developer Training:</strong> Security awareness and secure coding practices</li>
+                        <li><strong>Incident Response:</strong> Prepared response plans for security issues</li>
+                        <li><strong>Compliance Documentation:</strong> Maintain audit trails and evidence</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content-area" id="mypy-content">
+            <h2>🔍 MyPy: Static Type Checking for Python</h2>
+            
+            <div class="section-tabs">
+                <button class="tab active" data-tab="mypy-what">What & Why</button>
+                <button class="tab" data-tab="mypy-how">How It Works</button>
+                <button class="tab" data-tab="mypy-demo">Interactive Demo</button>
+                <button class="tab" data-tab="mypy-advanced">Advanced Patterns</button>
+            </div>
+
+            <div class="tab-content active" id="mypy-what">
+                <div class="info-box">
+                    <h3>What is MyPy?</h3>
+                    <p>MyPy is a <span class="highlight">static type checker</span> for Python that analyzes your code without executing it. It uses type hints to catch type-related bugs before runtime, making Python development more reliable and maintainable while preserving Python's dynamic nature.</p>
+                </div>
+
+                <h3>Why Static Type Checking Transforms Development</h3>
+                <div class="workflow-step">
+                    <h4>🐛 Catch Bugs Before Runtime</h4>
+                    <p>Identify type mismatches, attribute errors, and method call issues during development instead of discovering them in production.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>📚 Self-Documenting Code</h4>
+                    <p>Type hints serve as inline documentation, making function signatures and expected data types immediately clear to developers.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🔧 Enhanced IDE Support</h4>
+                    <p>IDEs can provide better autocomplete, refactoring tools, and error detection when they understand your code's type structure.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🏗️ Safer Refactoring</h4>
+                    <p>Confidently modify code knowing that type checker will catch interface mismatches and breaking changes.</p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <h4>❌ Without Type Checking</h4>
+                        <div class="code-block">def calculate_discount(price, discount_percent):
+    # What types are expected? 
+    # What does this return?
+    # Runtime error waiting to happen!
+    return price - (price * discount_percent)
+
+def get_user_name(user_id):
+    users = {1: "Alice", 2: "Bob"}
+    return users.get(user_id)  # Could return None!
+
+# This will crash at runtime
+name = get_user_name(999)
+print(name.upper())  # AttributeError: 'NoneType' has no attribute 'upper'</div>
+                    </div>
+                    <div class="comparison-item good">
+                        <h4>✅ With Type Hints & MyPy</h4>
+                        <div class="code-block">def calculate_discount(price: float, discount_percent: float) -> float:
+    # Clear expectations and return type
+    return price - (price * discount_percent / 100)
+
+def get_user_name(user_id: int) -> Optional[str]:
+    users: Dict[int, str] = {1: "Alice", 2: "Bob"}
+    return users.get(user_id)  # MyPy knows this can be None
+
+# MyPy catches this error before runtime!
+name = get_user_name(999)
+if name is not None:  # Required by type checker
+    print(name.upper())  # Safe!</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Common Runtime Errors MyPy Prevents</h4>
+                    <ul>
+                        <li><strong>AttributeError:</strong> Calling methods on None or wrong object types</li>
+                        <li><strong>TypeError:</strong> Passing wrong argument types to functions</li>
+                        <li><strong>KeyError:</strong> Accessing dictionary keys that might not exist</li>
+                        <li><strong>IndexError:</strong> List access with incompatible index types</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ Professional Development Benefits</h4>
+                    <ul>
+                        <li><strong>Reduced Debugging Time:</strong> Catch errors at development time, not in production</li>
+                        <li><strong>Improved Code Reviews:</strong> Type signatures make interfaces explicit</li>
+                        <li><strong>Better Team Collaboration:</strong> Clear contracts between functions and modules</li>
+                        <li><strong>Maintenance Confidence:</strong> Refactor large codebases without fear</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="mypy-how">
+                <h3>How MyPy Analyzes Your Code</h3>
+                
+                <div class="workflow-step">
+                    <h4>1. Type Inference</h4>
+                    <p>MyPy infers types when not explicitly provided:</p>
+                    <div class="code-block"># MyPy infers these types automatically
+x = 42          # Type: int
+name = "Alice"  # Type: str
+items = []      # Type: List[Any] (needs annotation for specificity)</div>
+                </div>
+                
+                <div class="workflow-step">
+                    <h4>2. Type Checking Rules</h4>
+                    <p>MyPy enforces type compatibility:</p>
+                    <ul>
+                        <li><strong>Assignment compatibility:</strong> Can this value be assigned to this variable?</li>
+                        <li><strong>Function call compatibility:</strong> Do arguments match parameter types?</li>
+                        <li><strong>Return type compatibility:</strong> Does return value match declared type?</li>
+                        <li><strong>Attribute access:</strong> Does this object have the requested attribute?</li>
+                    </ul>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>3. Gradual Typing</h4>
+                    <p>MyPy supports incremental adoption:</p>
+                    <ul>
+                        <li>Start with any existing Python code</li>
+                        <li>Add type hints gradually</li>
+                        <li>Use <code>Any</code> type for temporary compatibility</li>
+                        <li>Increase strictness over time</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Installation & Basic Usage</span>
+                    </div>
+                    <div class="code-block"># Install MyPy
+pip install mypy
+
+# Check a single file
+mypy my_script.py
+
+# Check entire project
+mypy .
+
+# Generate detailed report
+mypy --html-report mypy_report .
+
+# Check with specific strictness
+mypy --strict my_script.py
+
+# Ignore missing imports
+mypy --ignore-missing-imports .</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Common MyPy Error Examples</span>
+                    </div>
+                    <div class="code-block">error: Incompatible return value type (got "None", expected "str")
+error: Argument 1 to "append" of "list" has incompatible type "str"; expected "int"
+error: Item "None" of "Optional[str]" has no attribute "upper"
+error: Cannot call function of unknown type
+error: Name 'undefined_variable' is not defined
+error: Incompatible types in assignment (expression has type "int", variable has type "str")</div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🎯 Type Annotation Hierarchy</h4>
+                    <ul>
+                        <li><strong>Basic Types:</strong> int, str, float, bool</li>
+                        <li><strong>Collections:</strong> List[T], Dict[K, V], Set[T], Tuple[T, ...]</li>
+                        <li><strong>Optional Types:</strong> Optional[T] or Union[T, None]</li>
+                        <li><strong>Callable Types:</strong> Callable[[Arg1, Arg2], ReturnType]</li>
+                        <li><strong>Generic Types:</strong> Custom generic classes and functions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="mypy-demo">
+                <h3>Interactive MyPy Demo</h3>
+                <div class="interactive-demo">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Code with Type Issues (try running MyPy)</span>
+                            <button class="run-button" onclick="runMypyDemo()">Run MyPy Analysis</button>
+                        </div>
+                        <div class="code-block" id="mypy-input">def process_numbers(numbers):
+    """Function missing type hints - mypy can't verify safety."""
+    total = 0
+    for num in numbers:
+        total += num  # What if numbers contains strings?
+    return total
+
+def get_user_name(user_id: int) -> str:
+    """Promises to return string but might return None."""
+    users = {1: "Alice", 2: "Bob"}
+    return users.get(user_id)  # Type error!
+
+def unsafe_operations():
+    """Multiple type safety issues."""
+    text: Optional[str] = None
+    length = text.upper()  # Calling method on None!
+    
+    items = [1, 2, 3, 4, 5]
+    index = "2"  # String instead of int
+    value = items[index]  # Type error!
+    
+    return length, value
+
+# Usage that will cause runtime errors
+result = process_numbers(["1", "2", "3"])  # Strings, not numbers!
+name = get_user_name(999)  # Returns None
+print(name.upper())  # Crashes!</div>
+                    </div>
+                    <div class="output-panel" id="mypy-output">Click "Run MyPy Analysis" to see type issues detected...</div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Type Safety Progression Demo</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Watch Type Safety Improve</span>
+                            <button class="run-button" onclick="showTypeSafetyDemo()">Show Progressive Typing</button>
+                        </div>
+                        <div class="output-panel" id="type-safety-output">Click to see how adding type hints improves safety...</div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Generic Types Demo</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Advanced Type Patterns</span>
+                            <button class="run-button" onclick="showGenericDemo()">Explore Generics</button>
+                        </div>
+                        <div class="output-panel" id="generic-output">Click to see advanced type patterns and generics...</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🔍 MyPy Detection Capabilities</h4>
+                    <ul>
+                        <li><strong>None Safety:</strong> Prevents AttributeError from None values</li>
+                        <li><strong>Type Mismatches:</strong> Catches incompatible assignments and calls</li>
+                        <li><strong>Missing Attributes:</strong> Verifies object attributes exist</li>
+                        <li><strong>Return Type Violations:</strong> Ensures functions return promised types</li>
+                        <li><strong>Unreachable Code:</strong> Identifies dead code paths</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="mypy-advanced">
+                <h3>Advanced Type Patterns & Configuration</h3>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>mypy.ini Configuration</span>
+                    </div>
+                    <div class="code-block">[mypy]
+# Global options
+python_version = 3.9
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+
+# Be strict about None
+no_implicit_optional = true
+strict_optional = true
+
+# Error output
+show_error_codes = true
+show_column_numbers = true
+pretty = true
+
+# Per-module options
+[mypy-tests.*]
+disallow_untyped_defs = false
+
+[mypy-third_party_lib.*]
+ignore_missing_imports = true</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Advanced Type Patterns</span>
+                    </div>
+                    <div class="code-block">from typing import TypeVar, Generic, Protocol, Union, Literal, Final
+
+# Generic types for reusable code
+T = TypeVar('T')
+
+class Stack(Generic[T]):
+    def __init__(self) -> None:
+        self._items: List[T] = []
+    
+    def push(self, item: T) -> None:
+        self._items.append(item)
+    
+    def pop(self) -> T:
+        return self._items.pop()
+
+# Protocol for structural typing
+class Drawable(Protocol):
+    def draw(self) -> None: ...
+
+def render(item: Drawable) -> None:
+    item.draw()  # Works with any object that has draw()
+
+# Literal types for exact values
+Mode = Literal["read", "write", "append"]
+
+def open_file(filename: str, mode: Mode) -> None:
+    # Only accepts exact string values
+    pass
+
+# Final for constants
+MAX_CONNECTIONS: Final = 100</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Type Checking Workflow Integration</span>
+                    </div>
+                    <div class="code-block"># pre-commit hook
+repos:
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.0.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests, types-PyYAML]
+
+# GitHub Actions
+- name: Type check with mypy
+  run: |
+    pip install mypy
+    mypy . --html-report mypy_report
+    
+# Upload type check report
+- name: Upload MyPy report
+  uses: actions/upload-artifact@v3
+  with:
+    name: mypy-report
+    path: mypy_report/</div>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>🔧 Gradual Adoption Strategy</h4>
+                    <ol>
+                        <li><strong>Start Small:</strong> Add type hints to new functions</li>
+                        <li><strong>Focus on Interfaces:</strong> Type public APIs first</li>
+                        <li><strong>Use Any Temporarily:</strong> Use Any type for complex legacy code</li>
+                        <li><strong>Increase Strictness:</strong> Enable more strict options over time</li>
+                        <li><strong>Add Tests:</strong> Combine with pytest for complete verification</li>
+                    </ol>
+                </div>
+
+                <table class="tool-comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Strictness Level</th>
+                            <th>Configuration</th>
+                            <th>Use Case</th>
+                            <th>Benefits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Basic</strong></td>
+                            <td>Default settings</td>
+                            <td>Starting adoption</td>
+                            <td>Catch obvious errors</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Moderate</strong></td>
+                            <td>--strict-optional</td>
+                            <td>Active development</td>
+                            <td>None safety, better inference</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Strict</strong></td>
+                            <td>--strict</td>
+                            <td>New projects</td>
+                            <td>Maximum type safety</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom</strong></td>
+                            <td>Fine-tuned config</td>
+                            <td>Enterprise projects</td>
+                            <td>Tailored to team needs</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="warning-box">
+                    <h4>⚠️ Common MyPy Adoption Challenges</h4>
+                    <ul>
+                        <li><strong>Legacy Code:</strong> Large codebases without types take time to annotate</li>
+                        <li><strong>Third-party Libraries:</strong> Missing type stubs for some packages</li>
+                        <li><strong>Dynamic Patterns:</strong> Some Python patterns are hard to type</li>
+                        <li><strong>Team Resistance:</strong> Developers may see types as extra work initially</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ MyPy Best Practices</h4>
+                    <ul>
+                        <li><strong>Start with Function Signatures:</strong> Type inputs and outputs first</li>
+                        <li><strong>Use IDE Integration:</strong> Get real-time feedback while coding</li>
+                        <li><strong>Combine with Tests:</strong> Types + tests = comprehensive verification</li>
+                        <li><strong>Document with Types:</strong> Let type hints serve as live documentation</li>
+                        <li><strong>Regular Updates:</strong> Keep MyPy and type stubs updated</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content-area" id="flake8-content">
+            <h2>📏 Flake8: Style Enforcement & Code Quality Guardian</h2>
+            
+            <div class="section-tabs">
+                <button class="tab active" data-tab="flake8-what">What & Why</button>
+                <button class="tab" data-tab="flake8-how">How It Works</button>
+                <button class="tab" data-tab="flake8-demo">Interactive Demo</button>
+                <button class="tab" data-tab="flake8-rules">Rules & Configuration</button>
+            </div>
+
+            <div class="tab-content active" id="flake8-what">
+                <div class="info-box">
+                    <h3>What is Flake8?</h3>
+                    <p>Flake8 is a <span class="highlight">code quality enforcement tool</span> that combines multiple Python linting tools. It checks your code against PEP 8 style guidelines, identifies programming errors, and measures code complexity to ensure maintainable, professional code.</p>
+                </div>
+
+                <h3>Why Flake8 is Essential for Professional Development</h3>
+                <div class="workflow-step">
+                    <h4>🎯 Enforces Coding Standards</h4>
+                    <p>Automatically catches PEP 8 violations, ensuring consistent code style across your entire team and codebase.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🐛 Catches Programming Errors</h4>
+                    <p>Identifies syntax errors, undefined variables, unused imports, and other issues before they cause runtime problems.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>📊 Measures Code Complexity</h4>
+                    <p>Flags overly complex functions that are hard to test and maintain, encouraging better software architecture.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>⚡ Accelerates Code Reviews</h4>
+                    <p>Automates style checking so reviewers can focus on logic, architecture, and business requirements.</p>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ What Flake8 Combines</h4>
+                    <p>Flake8 is actually a wrapper around three powerful tools:</p>
+                    <ul>
+                        <li><strong>PyFlakes:</strong> Logical errors (unused imports, undefined variables)</li>
+                        <li><strong>pycodestyle:</strong> PEP 8 style violations (spacing, naming)</li>
+                        <li><strong>mccabe:</strong> Cyclomatic complexity measurement</li>
+                    </ul>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <h4>❌ Code Without Flake8 Checking</h4>
+                        <div class="code-block">import os,sys,json # Multiple imports on one line
+import unused_module # Unused import
+from collections import *  # Star import
+
+def   badly_formatted_function(param1,param2):  # Multiple spaces, no spacing
+    if param1>param2:return param1 # Multiple statements, no spaces
+    if param2 == None: # Should use 'is None'
+        pass
+    unused_variable = "waste" # Unused variable
+    result=param1+param2 # No spacing around operators
+    return result</div>
+                    </div>
+                    <div class="comparison-item good">
+                        <h4>✅ Flake8-Compliant Code</h4>
+                        <div class="code-block">import json
+import os
+import sys
+from collections import defaultdict
+
+def properly_formatted_function(param1, param2):
+    if param1 > param2:
+        return param1
+    
+    if param2 is None:
+        return None
+        
+    result = param1 + param2
+    return result</div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ Professional Benefits</h4>
+                    <ul>
+                        <li><strong>Quality Gates:</strong> Prevent low-quality code from entering your codebase</li>
+                        <li><strong>Consistent Standards:</strong> Every team member follows the same coding conventions</li>
+                        <li><strong>Reduced Technical Debt:</strong> Catch complexity and style issues early</li>
+                        <li><strong>Improved Maintainability:</strong> Enforce patterns that make code easier to modify</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="flake8-how">
+                <h3>How Flake8 Analyzes Your Code</h3>
+                
+                <div class="workflow-step">
+                    <h4>1. PyFlakes Analysis</h4>
+                    <p>Detects logical errors without executing code:</p>
+                    <ul>
+                        <li><strong>F401:</strong> Imported but unused modules</li>
+                        <li><strong>F811:</strong> Redefined functions/variables</li>
+                        <li><strong>F821:</strong> Undefined names</li>
+                        <li><strong>F841:</strong> Local variables assigned but never used</li>
+                    </ul>
+                </div>
+                
+                <div class="workflow-step">
+                    <h4>2. pycodestyle Checks</h4>
+                    <p>Enforces PEP 8 style guidelines:</p>
+                    <ul>
+                        <li><strong>E401:</strong> Multiple imports on one line</li>
+                        <li><strong>E501:</strong> Line too long (>79 characters)</li>
+                        <li><strong>E302:</strong> Expected 2 blank lines</li>
+                        <li><strong>E225:</strong> Missing whitespace around operator</li>
+                        <li><strong>W292:</strong> No newline at end of file</li>
+                    </ul>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>3. McCabe Complexity</h4>
+                    <p>Measures cyclomatic complexity:</p>
+                    <ul>
+                        <li><strong>C901:</strong> Function is too complex (default: >10)</li>
+                        <li>Counts decision points (if, for, while, except)</li>
+                        <li>Higher complexity = harder to test and maintain</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Installation & Basic Usage</span>
+                    </div>
+                    <div class="code-block"># Install Flake8
+pip install flake8
+
+# Check a single file
+flake8 my_script.py
+
+# Check entire project
+flake8 .
+
+# Check with specific rules
+flake8 --select=E,W,F .
+
+# Ignore specific rules
+flake8 --ignore=E501,W503 .
+
+# Generate detailed report
+flake8 --statistics --tee --output-file=flake8_report.txt .</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Example Flake8 Output</span>
+                    </div>
+                    <div class="code-block">./bad_code.py:1:1: F401 'unused_module' imported but unused
+./bad_code.py:1:10: E401 multiple imports on one line
+./bad_code.py:4:1: E302 expected 2 blank lines, found 1
+./bad_code.py:5:25: E225 missing whitespace around operator
+./bad_code.py:6:19: E711 comparison to None should be 'if cond is None:'
+./bad_code.py:8:5: F841 local variable 'unused_variable' is assigned to but never used
+./bad_code.py:15:1: C901 'complex_function' is too complex (12)</div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🔍 Understanding Error Codes</h4>
+                    <ul>
+                        <li><strong>E###:</strong> PEP 8 errors (style violations)</li>
+                        <li><strong>W###:</strong> PEP 8 warnings (style warnings)</li>
+                        <li><strong>F###:</strong> PyFlakes errors (logical issues)</li>
+                        <li><strong>C###:</strong> McCabe complexity warnings</li>
+                        <li><strong>N###:</strong> Naming convention errors (with plugins)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="flake8-demo">
+                <h3>Interactive Flake8 Demo</h3>
+                <div class="interactive-demo">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Code with Multiple Violations (try running Flake8)</span>
+                            <button class="run-button" onclick="runFlake8Demo()">Run Flake8 Analysis</button>
+                        </div>
+                        <div class="code-block" id="flake8-input">import os,sys,json
+import unused_module
+from collections import *
+
+def   BadlyFormattedClass:
+    def __init__(self,param1,param2):
+        self.value=42
+        self.very_long_variable_name_that_exceeds_the_line_length_limit_and_makes_code_hard_to_read = "too long"
+    
+    def method_with_complexity_issues(self, x):
+        if x > 0:
+            if x > 10:
+                if x > 20:
+                    if x > 30:
+                        if x > 40:
+                            if x > 50:
+                                return "very high"
+                            else:
+                                return "high"
+                        else:
+                            return "medium"
+                    else:
+                        return "low"
+                else:
+                    return "minimal"
+            else:
+                return "tiny"
+        else:
+            return "negative"</div>
+                    </div>
+                    <div class="output-panel" id="flake8-output">Click "Run Flake8 Analysis" to see violations detected...</div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Complexity Analysis Demo</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Function Complexity Checker</span>
+                            <button class="run-button" onclick="showComplexityDemo()">Analyze Complexity</button>
+                        </div>
+                        <div class="output-panel" id="complexity-output">Click to see how Flake8 measures cyclomatic complexity...</div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Fix Suggestions Demo</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Before vs After Fixing</span>
+                            <button class="run-button" onclick="showFixedCode()">Show Fixed Version</button>
+                        </div>
+                        <div class="output-panel" id="fixed-code-output">Click to see how violations should be fixed...</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Common Flake8 Violations in Professional Code</h4>
+                    <ul>
+                        <li><strong>E501 (Line too long):</strong> Most common violation - break long lines</li>
+                        <li><strong>F401 (Unused imports):</strong> Clean up imports regularly</li>
+                        <li><strong>E711/E712 (None/True comparisons):</strong> Use 'is' for None/True/False</li>
+                        <li><strong>C901 (Complex functions):</strong> Break down complex logic into smaller functions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="flake8-rules">
+                <h3>Configuration & Rule Management</h3>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>setup.cfg / tox.ini Configuration</span>
+                    </div>
+                    <div class="code-block">[flake8]
+# Maximum line length (match with Black)
+max-line-length = 88
+
+# Maximum complexity allowed
+max-complexity = 10
+
+# Rules to ignore (common for Black compatibility)
+ignore = 
+    E203,  # whitespace before ':'
+    E501,  # line too long (handled by Black)
+    W503,  # line break before binary operator
+
+# Rules to always enforce
+select = E,W,F,C
+
+# Exclude common directories
+exclude = 
+    .git,
+    __pycache__,
+    .tox,
+    .eggs,
+    *.egg,
+    build,
+    dist,
+    .venv,
+    venv
+
+# Files to include
+filename = *.py
+
+# Per-file ignores
+per-file-ignores =
+    __init__.py:F401  # Allow unused imports in __init__.py
+    tests/*:S101      # Allow assert statements in tests</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>pyproject.toml Configuration (Modern)</span>
+                    </div>
+                    <div class="code-block">[tool.flake8]
+max-line-length = 88
+max-complexity = 10
+extend-ignore = ["E203", "E501", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv"
+]
+
+# Plugin configurations
+[tool.flake8.plugins]
+# Enable additional plugins
+flake8-docstrings = true
+flake8-bugbear = true
+flake8-comprehensions = true</div>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>🔧 Essential Flake8 Plugins</h4>
+                    <ul>
+                        <li><strong>flake8-bugbear:</strong> Finds likely bugs and design problems</li>
+                        <li><strong>flake8-docstrings:</strong> Checks docstring conventions</li>
+                        <li><strong>flake8-comprehensions:</strong> Improves list/dict comprehensions</li>
+                        <li><strong>flake8-import-order:</strong> Enforces import ordering (alternative to isort)</li>
+                        <li><strong>flake8-bandit:</strong> Security-focused checks</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>CI/CD Integration</span>
+                    </div>
+                    <div class="code-block"># GitHub Actions workflow
+- name: Lint with flake8
+  run: |
+    # Install flake8
+    pip install flake8 flake8-bugbear flake8-docstrings
+    
+    # Stop build if there are Python syntax errors or undefined names
+    flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    
+    # Full flake8 check (warnings allowed)
+    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics</div>
+                </div>
+
+                <table class="tool-comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Error Category</th>
+                            <th>Code Range</th>
+                            <th>Description</th>
+                            <th>Action Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>E1xx</strong></td>
+                            <td>E101-E117</td>
+                            <td>Indentation errors</td>
+                            <td>Fix indentation (use 4 spaces)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>E2xx</strong></td>
+                            <td>E201-E231</td>
+                            <td>Whitespace errors</td>
+                            <td>Adjust spacing around brackets, operators</td>
+                        </tr>
+                        <tr>
+                            <td><strong>E3xx</strong></td>
+                            <td>E301-E306</td>
+                            <td>Blank line errors</td>
+                            <td>Add/remove blank lines per PEP 8</td>
+                        </tr>
+                        <tr>
+                            <td><strong>E4xx</strong></td>
+                            <td>E401-E402</td>
+                            <td>Import errors</td>
+                            <td>Fix import formatting and ordering</td>
+                        </tr>
+                        <tr>
+                            <td><strong>E5xx</strong></td>
+                            <td>E501-E502</td>
+                            <td>Line length errors</td>
+                            <td>Break long lines or use tool exceptions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>E7xx</strong></td>
+                            <td>E701-E743</td>
+                            <td>Statement errors</td>
+                            <td>Separate statements, fix comparisons</td>
+                        </tr>
+                        <tr>
+                            <td><strong>F8xx</strong></td>
+                            <td>F821, F841</td>
+                            <td>Name errors</td>
+                            <td>Fix undefined/unused variables</td>
+                        </tr>
+                        <tr>
+                            <td><strong>C9xx</strong></td>
+                            <td>C901</td>
+                            <td>Complexity warnings</td>
+                            <td>Refactor complex functions</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="success-box">
+                    <h4>✅ Best Practices for Flake8 Integration</h4>
+                    <ul>
+                        <li><strong>Start Gradually:</strong> Begin with basic rules, add more as team adapts</li>
+                        <li><strong>Match Tool Settings:</strong> Align line length with Black (88 chars)</li>
+                        <li><strong>Use Per-File Ignores:</strong> Different rules for tests, __init__.py files</li>
+                        <li><strong>Regular Reviews:</strong> Periodically review and update rule configurations</li>
+                        <li><strong>Team Training:</strong> Ensure team understands common violations and fixes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content-area" id="isort-content">
+            <h2>📑 isort: Import Organization Made Simple</h2>
+            
+            <div class="section-tabs">
+                <button class="tab active" data-tab="isort-what">What & Why</button>
+                <button class="tab" data-tab="isort-how">How It Works</button>
+                <button class="tab" data-tab="isort-demo">Interactive Demo</button>
+                <button class="tab" data-tab="isort-config">Configuration</button>
+            </div>
+
+            <div class="tab-content active" id="isort-what">
+                <div class="info-box">
+                    <h3>What is isort?</h3>
+                    <p>isort is a <span class="highlight">Python import organizer</span> that automatically sorts and organizes your import statements according to PEP 8 standards. It groups imports by type and sorts them alphabetically for maximum readability and consistency.</p>
+                </div>
+
+                <h3>Why Import Organization Matters</h3>
+                <div class="workflow-step">
+                    <h4>🧩 Clear Dependencies</h4>
+                    <p>Well-organized imports make it immediately obvious what external dependencies your module requires.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>📖 Improved Readability</h4>
+                    <p>Consistent import organization makes code easier to scan and understand, especially in large files.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>🔍 Easier Debugging</h4>
+                    <p>When imports are organized, it's easier to spot missing imports, circular dependencies, or unused imports.</p>
+                </div>
+                <div class="workflow-step">
+                    <h4>⚡ Faster Code Reviews</h4>
+                    <p>Reviewers can quickly assess dependencies without hunting through scattered import statements.</p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comparison-item">
+                        <h4>❌ Before isort (Chaotic)</h4>
+                        <div class="code-block">import requests
+import sys
+from collections import defaultdict
+import json
+from typing import List, Dict
+import os
+from .local_module import helper_function
+import datetime
+import pandas as pd
+from flask import Flask, request
+import re
+from pathlib import Path
+from ..utils import database_utils</div>
+                    </div>
+                    <div class="comparison-item good">
+                        <h4>✅ After isort (Organized)</h4>
+                        <div class="code-block">import datetime
+import json
+import os
+import re
+import sys
+from collections import defaultdict
+from pathlib import Path
+from typing import Dict, List
+
+import pandas as pd
+import requests
+from flask import Flask, request
+
+from ..utils import database_utils
+from .local_module import helper_function</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Common Import Problems isort Solves</h4>
+                    <ul>
+                        <li><strong>Mixed import styles:</strong> Mixing "import x" and "from x import y" randomly</li>
+                        <li><strong>Wrong grouping:</strong> Third-party imports mixed with standard library</li>
+                        <li><strong>No separation:</strong> All imports crammed together without logical grouping</li>
+                        <li><strong>Inconsistent ordering:</strong> Imports not sorted alphabetically</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="isort-how">
+                <h3>How isort Works</h3>
+                
+                <div class="workflow-step">
+                    <h4>1. Import Classification</h4>
+                    <p>isort categorizes imports into five groups:</p>
+                    <ul>
+                        <li><strong>Standard Library:</strong> Built-in Python modules (os, sys, json)</li>
+                        <li><strong>Third Party:</strong> External packages (requests, pandas, flask)</li>
+                        <li><strong>Local:</strong> Your project's modules</li>
+                        <li><strong>First Party:</strong> Your organization's packages</li>
+                        <li><strong>Future:</strong> __future__ imports</li>
+                    </ul>
+                </div>
+                
+                <div class="workflow-step">
+                    <h4>2. Organization Rules</h4>
+                    <p>Within each group, isort applies these rules:</p>
+                    <ul>
+                        <li>Sort alphabetically by module name</li>
+                        <li>Group "import x" statements before "from x import y"</li>
+                        <li>Sort imported names alphabetically</li>
+                        <li>Add blank lines between import groups</li>
+                    </ul>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>3. PEP 8 Compliance</h4>
+                    <p>isort ensures your imports follow PEP 8 guidelines:</p>
+                    <ul>
+                        <li>One import per line (except from imports)</li>
+                        <li>Absolute imports preferred over relative</li>
+                        <li>Standard library imports first</li>
+                        <li>Blank lines separating import groups</li>
+                    </ul>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Installation & Basic Usage</span>
+                    </div>
+                    <div class="code-block"># Install isort
+pip install isort
+
+# Sort imports in a single file
+isort my_script.py
+
+# Sort imports in entire project
+isort .
+
+# Check what would change without modifying files
+isort --check-only .
+
+# Show diff of what would change
+isort --diff my_script.py
+
+# Force single line imports
+isort --force-single-line .</div>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ isort Detection Capabilities</h4>
+                    <ul>
+                        <li><strong>Automatic Detection:</strong> Identifies standard library vs third-party packages</li>
+                        <li><strong>Local Module Recognition:</strong> Understands your project structure</li>
+                        <li><strong>Relative Import Handling:</strong> Properly organizes relative imports</li>
+                        <li><strong>Multi-line Import Formatting:</strong> Handles long import lists elegantly</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="isort-demo">
+                <h3>Interactive isort Demo</h3>
+                <div class="interactive-demo">
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Disorganized Imports (try running isort)</span>
+                            <button class="run-button" onclick="runIsortDemo()">Organize with isort</button>
+                        </div>
+                        <div class="code-block" id="isort-input">import requests
+import sys
+from collections import defaultdict
+import json
+from typing import List, Dict
+import os
+from .local_module import helper_function
+import datetime
+import pandas as pd
+from flask import Flask, request
+import re
+from pathlib import Path
+from ..utils import database_utils
+from concurrent.futures import ThreadPoolExecutor
+import numpy as np
+from .models import User, Product</div>
+                    </div>
+                    <div class="output-panel" id="isort-output">Click "Organize with isort" to see the organized result...</div>
+                </div>
+
+                <div class="interactive-demo">
+                    <h4>Try Different isort Profiles</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Profile Comparison</span>
+                            <div>
+                                <button class="run-button" onclick="showIsortProfile('black')">Black Profile</button>
+                                <button class="run-button" onclick="showIsortProfile('django')">Django Profile</button>
+                                <button class="run-button" onclick="showIsortProfile('google')">Google Profile</button>
+                            </div>
+                        </div>
+                        <div class="output-panel" id="isort-profile-output">Select a profile to see how isort organizes imports differently...</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>🎯 Real-World Benefits</h4>
+                    <ul>
+                        <li><strong>Merge Conflict Reduction:</strong> Consistent import order reduces Git conflicts</li>
+                        <li><strong>Dependency Auditing:</strong> Easy to see what packages your project uses</li>
+                        <li><strong>Import Cleanup:</strong> Quickly identify and remove unused imports</li>
+                        <li><strong>Team Consistency:</strong> Everyone's imports look identical</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tab-content" id="isort-config">
+                <h3>Configuration & Integration</h3>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>pyproject.toml Configuration</span>
+                    </div>
+                    <div class="code-block">[tool.isort]
+# Use Black-compatible settings
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+# Specify your project's modules
+known_first_party = ["myproject"]
+known_local_folder = ["src", "app"]
+
+# Force certain imports to be treated as third-party
+known_third_party = ["custom_package"]
+
+# Skip certain files
+skip = ["migrations", "__pycache__"]
+skip_glob = ["*/migrations/*"]
+
+# Import section comments
+import_heading_stdlib = "Standard library imports"
+import_heading_thirdparty = "Third-party imports"
+import_heading_firstparty = "First-party imports"
+import_heading_localfolder = "Local imports"</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Common Configuration Profiles</span>
+                    </div>
+                    <div class="code-block"># Black compatibility (recommended)
+[tool.isort]
+profile = "black"
+
+# Django projects
+[tool.isort]
+profile = "django"
+known_django = "django"
+
+# Google style
+[tool.isort]
+profile = "google"
+force_single_line = true
+
+# Custom configuration
+[tool.isort]
+force_sort_within_sections = true
+lexicographical = true
+group_by_package = true
+force_single_line = false
+combine_as_imports = true</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Pre-commit Hook Integration</span>
+                    </div>
+                    <div class="code-block"># .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]</div>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>🔧 IDE Integration</h4>
+                    <p><strong>VS Code:</strong> Install "isort" extension for automatic import organization</p>
+                    <p><strong>PyCharm:</strong> Configure External Tools to run isort on save</p>
+                    <p><strong>Vim/Neovim:</strong> Use ale or coc-pyright with isort integration</p>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ Common Configuration Pitfalls</h4>
+                    <ul>
+                        <li><strong>Profile Conflicts:</strong> Using incompatible profiles with other tools (use "black" profile for Black compatibility)</li>
+                        <li><strong>Known Packages:</strong> Not specifying your project modules in known_first_party</li>
+                        <li><strong>Line Length:</strong> Mismatched line_length settings with Black (should both be 88)</li>
+                        <li><strong>Multi-line Output:</strong> Wrong multi_line_output mode for your coding style</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="content-area" id="workflow-content">
+            <h2>⚙️ Integrating All Tools: Professional Workflow</h2>
+            
+            <div class="section-tabs">
+                <button class="tab active" data-tab="workflow-overview">Workflow Overview</button>
+                <button class="tab" data-tab="workflow-setup">Setup Guide</button>
+                <button class="tab" data-tab="workflow-automation">Automation</button>
+            </div>
+
+            <div class="tab-content active" id="workflow-overview">
+                <div class="info-box">
+                    <h3>Complete Quality Assurance Pipeline</h3>
+                    <p>A professional development workflow integrates all quality tools at different stages to catch issues early and maintain consistent standards.</p>
+                </div>
+
+                <h3>Recommended Tool Execution Order</h3>
+                <div class="workflow-step">
+                    <h4>1. 📑 isort - Import Organization</h4>
+                    <p>Run first to organize imports before formatting touches them</p>
+                    <div class="code-block">isort .</div>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>2. ⚫ Black - Code Formatting</h4>
+                    <p>Format code after imports are organized</p>
+                    <div class="code-block">black .</div>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>3. 📏 Flake8 - Style Checking</h4>
+                    <p>Check for style violations and complexity issues</p>
+                    <div class="code-block">flake8 .</div>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>4. 🔍 MyPy - Type Checking</h4>
+                    <p>Verify type annotations and catch type-related bugs</p>
+                    <div class="code-block">mypy .</div>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>5. 🛡️ Bandit - Security Scanning</h4>
+                    <p>Scan for security vulnerabilities</p>
+                    <div class="code-block">bandit -r .</div>
+                </div>
+
+                <div class="workflow-step">
+                    <h4>6. 🧪 Pytest - Testing</h4>
+                    <p>Run comprehensive tests to verify functionality</p>
+                    <div class="code-block">pytest --cov=. --cov-report=html</div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="workflow-setup">
+                <h3>Project Setup Configuration</h3>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>pyproject.toml - Centralized Configuration</span>
+                    </div>
+                    <div class="code-block">[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --cov=src --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*"]</div>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Makefile - Development Commands</span>
+                    </div>
+                    <div class="code-block">.PHONY: format lint test security check all
+
+format:
+	isort .
+	black .
+
+lint:
+	flake8 .
+	mypy .
+
+test:
+	pytest --cov=. --cov-report=html
+
+security:
+	bandit -r . -f json -o security-report.json
+
+check: format lint security test
+	@echo "✅ All quality checks passed!"
+
+all: check</div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="workflow-automation">
+                <h3>CI/CD Integration</h3>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>.github/workflows/quality.yml - GitHub Actions</span>
+                    </div>
+                    <div class="code-block">name: Code Quality
+
+on: [push, pull_request]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black isort flake8 mypy bandit pytest pytest-cov
+    
+    - name: Format check
+      run: |
+        isort --check-only .
+        black --check .
+    
+    - name: Lint
+      run: |
+        flake8 .
+        mypy .
+    
+    - name: Security scan
+      run: bandit -r .
+    
+    - name: Test
+      run: pytest --cov=. --cov-report=xml
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3</div>
+                </div>
+
+                <div class="success-box">
+                    <h4>🎯 Professional Benefits</h4>
+                    <ul>
+                        <li><strong>Automated Quality Gates:</strong> Prevent low-quality code from reaching production</li>
+                        <li><strong>Consistent Standards:</strong> All team members follow the same quality guidelines</li>
+                        <li><strong>Early Bug Detection:</strong> Catch issues in development, not production</li>
+                        <li><strong>Security Compliance:</strong> Automated security scanning for regulatory requirements</li>
+                        <li><strong>Maintainable Codebase:</strong> Long-term code health and team productivity</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tool card navigation
+            const toolCards = document.querySelectorAll('.tool-card');
+            const contentAreas = document.querySelectorAll('.content-area');
+
+            toolCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const tool = this.dataset.tool;
+                    
+                    // Update active tool card
+                    toolCards.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    contentAreas.forEach(area => area.classList.remove('active'));
+                    document.getElementById(tool + '-content').classList.add('active');
+                });
+            });
+
+            // Tab functionality
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('tab')) {
+                    const tabGroup = e.target.closest('.content-area');
+                    const tabName = e.target.dataset.tab;
+                    
+                    // Update active tab
+                    tabGroup.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    // Show corresponding tab content
+                    tabGroup.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                    document.getElementById(tabName).classList.add('active');
+                }
+            });
+
+            // Show overview by default
+            document.querySelector('[data-tool="overview"]').click();
+        });
+
+        // Demo functions
+        function runBlackDemo() {
+            const output = document.getElementById('black-output');
+            const formattedCode = 'def process_order(\n    customer_id,\n    items,\n    shipping_address,\n    billing_address,\n    payment_method,\n    special_instructions=None,\n    priority="normal",\n    gift_wrap=False,\n):\n    order = {\n        "customer_id": customer_id,\n        "items": items,\n        "shipping": shipping_address,\n        "billing": billing_address,\n        "payment": payment_method,\n        "instructions": special_instructions,\n        "priority": priority,\n        "gift_wrap": gift_wrap,\n        "status": "pending",\n        "total": 0,\n    }\n    order_total = sum([item["price"] * item["quantity"] for item in items])\n    order["total"] = order_total\n    return order\n\n✅ Formatted successfully!\n- Added proper spacing around operators\n- Broke long parameter list into multiple lines\n- Used consistent double quotes\n- Added trailing commas for better version control diffs';
+            
+            output.textContent = formattedCode;
+        }
+
+        function runIsortDemo() {
+            const output = document.getElementById('isort-output');
+            const organizedCode = 'import datetime\nimport json\nimport os\nimport re\nimport sys\nfrom collections import defaultdict\nfrom concurrent.futures import ThreadPoolExecutor\nfrom pathlib import Path\nfrom typing import Dict, List\n\nimport numpy as np\nimport pandas as pd\nimport requests\nfrom flask import Flask, request\n\nfrom ..utils import database_utils\nfrom .local_module import helper_function\nfrom .models import Product, User\n\n✅ Imports organized successfully!\n\nChanges made:\n- Grouped imports into 3 sections: standard library, third-party, local\n- Sorted alphabetically within each group\n- Added blank lines between import groups\n- Organized \'from\' imports after regular imports\n- Fixed import order following PEP 8 standards\n\nImport Groups Detected:\n📚 Standard Library (8 imports): datetime, json, os, re, sys, collections, concurrent.futures, pathlib, typing\n📦 Third-party (4 imports): numpy, pandas, requests, flask  \n🏠 Local (3 imports): utils, local_module, models';
+            
+            output.textContent = organizedCode;
+        }
+
+        function runFlake8Demo() {
+            const output = document.getElementById('flake8-output');
+            const flake8Results = 'flake8 analysis results:\n\n./bad_code.py:1:10: E401 multiple imports on one line\n./bad_code.py:2:1: F401 \'unused_module\' imported but unused  \n./bad_code.py:3:1: F403 \'from collections import *\' used; unable to detect undefined names\n./bad_code.py:5:1: E302 expected 2 blank lines, found 0\n./bad_code.py:5:27: E999 SyntaxError: invalid syntax (missing parentheses)\n./bad_code.py:6:24: E225 missing whitespace around operator\n./bad_code.py:6:32: E225 missing whitespace around operator  \n./bad_code.py:8:9: E225 missing whitespace around operator\n./bad_code.py:8:88: E501 line too long (112 > 88 characters)\n./bad_code.py:11:5: C901 \'method_with_complexity_issues\' is too complex (11)\n\n📊 SUMMARY:\n- Total violations: 10\n- Style errors (E): 7\n- Logical errors (F): 2  \n- Complexity warnings (C): 1\n\n🔴 CRITICAL ISSUES:\n- Syntax error on line 5 (missing parentheses in class definition)\n- Unused import \'unused_module\' \n- Star import from collections (can hide undefined names)\n- Function complexity exceeds threshold (11 > 10)\n\n💡 QUICK FIXES:\n1. Fix class definition syntax\n2. Remove unused imports\n3. Use specific imports instead of star imports\n4. Add proper spacing around operators\n5. Break down complex function into smaller ones\n6. Add proper blank lines between class/function definitions';
+            
+            output.textContent = flake8Results;
+        }
+
+        function showComplexityDemo() {
+            const output = document.getElementById('complexity-output');
+            const complexityAnalysis = '🧮 CYCLOMATIC COMPLEXITY ANALYSIS\n\nWhat is Cyclomatic Complexity?\nMeasures the number of linearly independent paths through code.\nHigher complexity = more decision points = harder to test and debug.\n\nEXAMPLE FUNCTION ANALYSIS:\ndef method_with_complexity_issues(self, x):  # +1 for function\n    if x > 0:                                # +1 for if\n        if x > 10:                          # +1 for nested if  \n            if x > 20:                      # +1 for nested if\n                if x > 30:                  # +1 for nested if\n                    if x > 40:              # +1 for nested if\n                        if x > 50:          # +1 for nested if\n                            return "very high"\n                        else:               # +1 for else\n                            return "high"\n                    else:                   # +1 for else\n                        return "medium"\n                else:                       # +1 for else\n                    return "low"\n            else:                           # +1 for else\n                return "minimal"\n        else:                               # +1 for else\n            return "tiny"\n    else:                                   # +1 for else\n        return "negative"\n\nCOMPLEXITY SCORE: 12 (exceeds limit of 10)\n\n✅ REFACTORING SUGGESTION:\ndef get_value_category(x):\n    thresholds = [\n        (90, "very high"),\n        (80, "high"), \n        (60, "medium-high"),\n        (40, "medium"),\n        (20, "low-medium"),\n        (10, "low"),\n        (0, "minimal")\n    ]\n    \n    if x <= 0:\n        return "negative"\n        \n    for threshold, category in thresholds:\n        if x > threshold:\n            return category\n    return "minimal"\n\nNEW COMPLEXITY SCORE: 4 (within acceptable limits)';
+            
+            output.textContent = complexityAnalysis;
+        }
+
+        function runMypyDemo() {
+            const output = document.getElementById('mypy-output');
+            const mypyResults = 'mypy analysis results:\n\n./type_issues.py:1: error: Function is missing a type annotation\n./type_issues.py:4: error: Unsupported operand types for + ("int" and "str")\n./type_issues.py:9: error: Incompatible return value type (got "Optional[str]", expected "str")\n./type_issues.py:14: error: Item "None" of "Optional[str]" has no attribute "upper"\n./type_issues.py:17: error: Invalid index type "str" for "List[int]"; expected type "int"\n./type_issues.py:23: error: Argument 1 to "process_numbers" has incompatible type "List[str]"; expected "List[int]"\n./type_issues.py:25: error: Item "None" of "Optional[str]" has no attribute "upper"\n\n📊 SUMMARY:\n- Total type errors: 7\n- Missing annotations: 1\n- Type incompatibilities: 4  \n- None safety violations: 2\n\n🔴 CRITICAL ISSUES:\n1. Function \'process_numbers\' missing type hints - MyPy can\'t verify safety\n2. Trying to add int + str in loop (runtime TypeError)\n3. Function promises str but returns Optional[str] \n4. Calling .upper() on potential None value\n5. Using string as list index instead of int\n\n💡 TYPE SAFETY VIOLATIONS:\n- None safety: Accessing attributes on values that could be None\n- Type compatibility: Mixing incompatible types (str + int)\n- Interface contracts: Functions not returning promised types\n- Collection safety: Wrong index types for list access\n\n🛡️ RUNTIME ERRORS PREVENTED:\n- TypeError: unsupported operand type(s) for +: \'int\' and \'str\'\n- AttributeError: \'NoneType\' object has no attribute \'upper\'\n- TypeError: list indices must be integers or slices, not str\n\n✅ MyPy caught 7 potential runtime errors before deployment!';
+            
+            output.textContent = mypyResults;
+        }
+
+        function showTypeSafetyDemo() {
+            const output = document.getElementById('type-safety-output');
+            const safetyDemo = '🔒 TYPE SAFETY PROGRESSION - From Unsafe to Bulletproof\n\nSTAGE 1: No Type Hints (Dangerous)\ndef calculate_discount(price, discount):\n    return price - (price * discount)  # What types? What could go wrong?\n\n❌ POTENTIAL ISSUES:\n- Could pass strings instead of numbers\n- Discount might be percentage (10) or decimal (0.10)\n- No indication of return type\n\nSTAGE 2: Basic Type Hints (Better)\ndef calculate_discount(price: float, discount: float) -> float:\n    return price - (price * discount / 100)\n\n✅ IMPROVEMENTS:\n- Clear parameter types expected\n- Explicit return type\n- MyPy can verify number operations\n\nSTAGE 3: Validation + Type Safety (Professional)\nfrom typing import Union\n\ndef calculate_discount(price: float, discount: float) -> float:\n    if price < 0:\n        raise ValueError("Price cannot be negative")\n    if not (0 <= discount <= 100):\n        raise ValueError("Discount must be between 0 and 100")\n    return round(price - (price * discount / 100), 2)\n\n✅ BULLETPROOF:\n- Type safety via MyPy\n- Runtime validation for business rules\n- Clear error messages\n- Proper return value formatting\n\nSTAGE 4: Advanced Type Safety (Enterprise)\nfrom typing import NewType, Union\nfrom decimal import Decimal\n\nPrice = NewType(\'Price\', Decimal)\nDiscountPercent = NewType(\'DiscountPercent\', float)\n\ndef calculate_discount(price: Price, discount: DiscountPercent) -> Price:\n    # Type system prevents mixing up parameters\n    # Decimal for financial calculations\n    # Custom types for domain modeling\n    ...\n\n🎯 PROGRESSION BENEFITS:\nStage 1 → 2: Catch basic type errors\nStage 2 → 3: Add runtime safety  \nStage 3 → 4: Model business domain in types';
+            
+            output.textContent = safetyDemo;
+        }
+
+        function runBanditDemo() {
+            const output = document.getElementById('bandit-output');
+            const banditResults = 'bandit security scan results:\n\nTest results:\n>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified\n   Severity: High   Confidence: High\n   Location: ./vulnerable_code.py:8:5\n\n8   os.system(f"cat {filename}")\n\n>> Issue: [B105:hardcoded_password_string] Possible hardcoded password detected\n   Severity: Low   Confidence: Medium  \n   Location: ./vulnerable_code.py:11:19\n\n11  DATABASE_PASSWORD = "super_secret_password_123"\n\n>> Issue: [B311:random] Standard pseudo-random generators not suitable for security\n   Severity: Low   Confidence: High\n   Location: ./vulnerable_code.py:16:12\n\n16      return random.randint(100000, 999999)\n\n>> Issue: [B301:pickle] Pickle library appears to be in use, possible security issue\n   Severity: Medium   Confidence: High\n   Location: ./vulnerable_code.py:21:16\n\n21          return pickle.load(f)\n\n📊 SCAN SUMMARY:\nFiles scanned: 1\nTotal lines of code: 32\nIssues by severity:\n  High: 1 (Critical - requires immediate attention)\n  Medium: 1 (Significant security concerns)  \n  Low: 2 (Potential issues worth reviewing)\n\n🚨 CRITICAL FINDINGS:\n1. Shell Injection (B602) - HIGH SEVERITY\n   Risk: Remote code execution via user input\n   Attack: User enters "; rm -rf /" to delete files\n\n2. Unsafe Deserialization (B301) - MEDIUM SEVERITY  \n   Risk: Arbitrary code execution via pickle\n   Attack: Malicious pickle files execute code\n\n💡 SECURITY RECOMMENDATIONS:\n✅ Replace os.system() with subprocess.run() using argument lists\n✅ Move secrets to environment variables  \n✅ Use secrets module for cryptographic randomness\n✅ Replace pickle with JSON for data serialization';
+            
+            output.textContent = banditResults;
+        }
+
+        function showSecurityImpactDemo() {
+            const output = document.getElementById('security-impact-output');
+            const impactDemo = '🎯 REAL-WORLD SECURITY IMPACT ANALYSIS\n\n1. 🚨 SHELL INJECTION (B602) - CRITICAL RISK\nAttack Scenario:\n  User Input: "; rm -rf /"\n  Result: ENTIRE SYSTEM DELETED\n\nReal-World Examples:\n  • 2014: Shellshock vulnerability affected millions\n  • 2017: Equifax breach partly due to command injection\n  \nBusiness Impact:\n  💰 Financial: $50M+ average cost of data breach\n  📰 Reputation: Permanent damage to brand trust\n  ⚖️ Legal: Regulatory fines, lawsuits\n\n2. 🔓 HARDCODED CREDENTIALS (B105) - HIGH RISK\nAttack Scenario:\n  • Source code exposed via public repository\n  • Credentials harvested by automated bots\n  • Unauthorized access to production systems\n\n3. 🎲 WEAK RANDOM GENERATION (B311) - MEDIUM RISK\nAttack Scenario:\n  • Session tokens become predictable\n  • Attackers guess valid tokens\n  • Account takeover attacks\n\n4. 💾 UNSAFE DESERIALIZATION (B301) - HIGH RISK\nAttack Scenario:\n  • Malicious pickle file uploaded\n  • Automatic code execution on deserialization\n  • Complete system compromise\n\n🛡️ DEFENSE STRATEGIES:\n1. Input Validation: Whitelist allowed characters\n2. Parameterized Queries: Prevent injection attacks\n3. Secrets Management: Use vault solutions\n4. Secure Randomness: Use secrets module\n5. Modern Cryptography: bcrypt, Argon2, scrypt';
+            
+            output.textContent = impactDemo;
+        }
+
+        function runPytestDemo() {
+            const output = document.getElementById('pytest-output');
+            const pytestResults = 'pytest test results:\n\n========================== FAILURES ==========================\n________________________ test_empty_cart ________________________\n\n    def test_empty_cart():\n        cart = ShoppingCart()\n>       assert cart.get_total() == 0.0\nE       ZeroDivisionError: division by zero\n\ntest_shopping_cart.py:23: ZeroDivisionError\n\n________________________ test_bulk_discount ________________________\n\n    def test_bulk_discount():\n        cart = ShoppingCart()\n        for i in range(5):\n            cart.add_item("Item", 10.0)\n        \n        original_total = cart.get_total()\n        cart.apply_bulk_discount()\n        discounted_total = cart.get_total()\n        \n>       assert discounted_total == original_total * 0.9\nE       assert 50.0 == 45.0\n\ntest_shopping_cart.py:33: AssertionError\n\n🔍 BUGS DETECTED BY PYTEST:\n\n1. 🚨 CRITICAL BUG - Division by Zero:\n   - Method: get_total()\n   - Issue: Returns 1/0 when cart is empty\n   - Impact: Application crashes on empty cart\n   - Fix: Return 0.0 for empty cart\n\n2. 🐛 LOGIC BUG - Wrong Discount Condition:\n   - Method: apply_bulk_discount()\n   - Issue: Uses < 5 instead of >= 5\n   - Impact: Discount applied to small orders instead of bulk orders\n   - Fix: Change condition to >= 5\n\n📊 TEST SUMMARY:\n- Tests Run: 3\n- Passed: 1 (33%)\n- Failed: 2 (67%)\n\n💡 PYTEST BENEFITS DEMONSTRATED:\n✅ Automatic bug detection before production\n✅ Clear error messages with exact line numbers\n✅ Detailed failure explanations\n✅ Quick feedback loop for developers\n✅ Prevents regression when fixing bugs\n\n🔧 NEXT STEPS:\n1. Fix the division by zero bug\n2. Correct the bulk discount logic\n3. Add more edge case tests\n4. Run tests again to verify fixes';
+            
+            output.textContent = pytestResults;
+        }
+
+        function showTDDDemo() {
+            const output = document.getElementById('tdd-output');
+            const tddDemo = '🔄 TEST-DRIVEN DEVELOPMENT (TDD) WORKFLOW\n\nTDD follows the Red-Green-Refactor cycle:\n🔴 RED: Write a failing test\n🟢 GREEN: Write minimum code to pass\n🔵 REFACTOR: Improve code while keeping tests green\n\nEXAMPLE: Building an Email Validator\n\nSTEP 1: 🔴 RED - Write failing test first\ndef test_valid_email():\n    # This test will fail because function doesn\'t exist yet\n    assert is_valid_email("user@example.com") is True\n\ndef test_invalid_email():\n    assert is_valid_email("invalid") is False\n\n$ pytest\n> NameError: name \'is_valid_email\' is not defined\nFAILED - Function doesn\'t exist yet ✓ Expected!\n\nSTEP 2: 🟢 GREEN - Write minimal code to pass\ndef is_valid_email(email):\n    # Simplest implementation that passes tests\n    return "@" in email\n\n$ pytest\n> 1 passed, 1 failed\nPROGRESS - One test passing, need to handle invalid case\n\ndef is_valid_email(email):\n    # Handle both test cases\n    return "@" in email and "." in email\n\n$ pytest\n> 2 passed\nSUCCESS - Both tests passing!\n\nSTEP 3: 🔵 REFACTOR - Improve while keeping tests green\ndef is_valid_email(email):\n    if not email or not isinstance(email, str):\n        return False\n    \n    # More robust validation\n    import re\n    pattern = r\'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\'\n    return bool(re.match(pattern, email.lower()))\n\n$ pytest\n> 2 passed\nEXCELLENT - Better implementation, tests still pass!\n\n🎯 TDD BENEFITS:\n✅ Forces you to think about requirements first\n✅ Ensures every line of code has a test\n✅ Prevents over-engineering (write only what\'s needed)\n✅ Creates comprehensive test suite naturally\n✅ Makes refactoring safe and confident\n✅ Provides immediate feedback on design decisions\n\n🏗️ TDD BEST PRACTICES:\n1. Start with the simplest test case\n2. Write the minimum code to pass\n3. Refactor only when tests are green\n4. Test behavior, not implementation\n5. Keep test cycles short (minutes, not hours)';
+            
+            output.textContent = tddDemo;
+        }
+
+        function showFixturesDemo() {
+            const output = document.getElementById('fixtures-output');
+            const fixturesDemo = '🔧 FIXTURES & PARAMETRIZATION - Professional Test Patterns\n\n1. BASIC FIXTURES - Reusable Test Setup\n\n@pytest.fixture\ndef sample_user():\n    """Provides a test user for multiple tests."""\n    return {\n        "name": "Alice Smith",\n        "email": "alice@example.com",\n        "age": 30,\n        "is_premium": False\n    }\n\ndef test_user_creation(sample_user):\n    user = User(sample_user["name"], sample_user["email"])\n    assert user.name == "Alice Smith"\n    assert user.email == "alice@example.com"\n\ndef test_user_validation(sample_user):\n    # Same fixture, different test\n    assert is_valid_email(sample_user["email"]) is True\n\n2. SCOPE CONTROL - Expensive Setup Optimization\n\n@pytest.fixture(scope="session")  # Run once per test session\ndef database_connection():\n    """Expensive database setup - only run once."""\n    print("Setting up test database...")\n    conn = create_test_database()\n    yield conn  # Provide to tests\n    print("Tearing down test database...")\n    conn.close()\n\n3. PARAMETRIZATION - Test Multiple Scenarios\n\n@pytest.mark.parametrize("email,expected", [\n    ("user@example.com", True),\n    ("test.email@domain.org", True),\n    ("invalid-email", False),\n    ("@domain.com", False),\n    ("user@", False),\n    ("", False),\n])\ndef test_email_validation_comprehensive(email, expected):\n    """Test email validation with many cases."""\n    assert is_valid_email(email) is expected\n\n# Runs 6 separate tests automatically!\n\n🎯 FIXTURE BENEFITS:\n✅ DRY Principle - Don\'t Repeat Yourself\n✅ Consistent Test Setup - Same environment every time\n✅ Dependency Injection - Clean separation of concerns\n✅ Performance Optimization - Reuse expensive setup\n✅ Easy Maintenance - Change setup in one place\n\n📊 TEST EXECUTION WITH FIXTURES:\npytest test_user.py -v\n\ntest_user.py::test_email_validation_comprehensive[user@example.com-True] PASSED\ntest_user.py::test_email_validation_comprehensive[test.email@domain.org-True] PASSED\ntest_user.py::test_email_validation_comprehensive[invalid-email-False] PASSED\ntest_user.py::test_email_validation_comprehensive[@domain.com-False] PASSED\ntest_user.py::test_email_validation_comprehensive[user@-False] PASSED\ntest_user.py::test_email_validation_comprehensive[-False] PASSED\n\n6 tests generated from 1 test function! 🎉';
+            
+            output.textContent = fixturesDemo;
+        }
+    </script>
+</body>
+</html>
